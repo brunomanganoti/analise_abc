@@ -19,6 +19,8 @@ df_produtos    = pd.read_csv('data/produtos.csv')
 # em diferentes estados. Dessa forma, considerei fazer a análise padronizando os nomes das cidades porém mantendo a
 # diferença entre os estados. 
 # Obs: As cidades registradas como 'Rio' foram consideradas diferentes de 'Rio de Janeiro'.
+# Cidades de nomes idênticos porém de estados diferentes foram mantidas pois considerei como 
+# cada uma sendo única para o Estado.
 
 # 'sao Paulo', 'Sao Paulo' -> 'São Paulo'
 df_clientes['cidade'] = df_clientes['cidade'].replace(['sao Paulo', 'Sao Paulo'],'São Paulo')
@@ -118,21 +120,23 @@ f_stat, p_value = f_oneway(grupo_A, grupo_B, grupo_C)
 # apontavam o mesmo como o grupo mais benéfico neste sentido.
 
 # Trecho abaixo realizado para geração de gráficos e visualização dos dados acima
-
 # --- Gráfico comparando taxas de conversão entre os grupos
-""" df_conversao_grupos = sqldf(query_comparacao_grupos)
-cores = ['#0457ac','#308fac','#37bd79','#a7e237','#f4e604']
+df_conversao_grupos = sqldf(query_comparacao_grupos)
+cores = ['#133c55','#59a5d8','#91e5f6']
 plt.style.use('classic')
 plt.figure(figsize=(12,8))
-plt.bar(df_conversao_grupos['Estado'], df_conversao_grupos['Valor_Total'], color=cores, edgecolor='black')
-plt.title('Estados com maior receita em vendas', fontsize=16, pad=16)
-plt.xlabel('Estado', fontsize=14, labelpad=16)
+plt.bar(df_conversao_grupos['Grupo'], df_conversao_grupos['Receita_Total'], color=cores, edgecolor='black', width=0.5)
+plt.title('Receita total por grupo', fontsize=16, pad=16)
+plt.xlabel('Grupo', fontsize=14, labelpad=16)
 plt.ylabel('Receita Total (R$)', fontsize=14, labelpad=16)
 plt.xticks(rotation=0)
 plt.tick_params(axis='x', which='major', pad=10)
-plt.margins(x=0.05)
+plt.margins(x=0.085)
 plt.grid(True, linestyle='--')
-plt.tight_layout() """
+plt.tight_layout()
+
+# Descomente a linha abaixo caso queira salvar novamente o gráfico gerado.
+# plt.savefig('graficos/questao1/receita_total_grupo.png')
 
 # --- Gráfico comparando porcentagens do total da receita por grupo ---
 df_comparacao_grupos = sqldf(query_comparacao_grupos)
@@ -150,11 +154,11 @@ for i, patch in enumerate(patch):
   text[i].set_color(patch.get_facecolor())
 plt.setp(text, fontweight='600')
 plt.axis('equal')
-plt.title('Receita total por Grupo', fontsize=19, pad=16)
+plt.title('Participação na receita por grupo', fontsize=19, pad=16)
 # Referência de personalização do gráfico: https://www.pythoncharts.com/matplotlib/pie-chart-matplotlib/
 
 # Descomente a linha abaixo caso queira salvar novamente o gráfico gerado.
-# plt.savefig('graficos/questao1/receita_total_grupo.png')
+# plt.savefig('graficos/questao1/percentual_total_grupo.png')
 
 # OBS: Como o Grupo B foi o escolhido na questão 1, as próximas análises serão
 # feitas considerando apenas os clientes ou pedidos que pertencerem a este grupo.
@@ -227,7 +231,7 @@ cores = ['#e07a5f', '#3d405b', '#81b29a', '#f2cc8f', "#8c9491"]
 plt.style.use('classic')
 plt.figure(figsize=(12,8))
 plt.barh(df_influencia_estados['Estado'], df_influencia_estados['Porcentagem'], color=cores, edgecolor='black')
-plt.title('10 estados com maior participação da receita total', fontsize=16, pad=16)
+plt.title('10 estados com maior participação na receita total', fontsize=16, pad=16)
 plt.xlabel('Percentual (%)', fontsize=14, labelpad=16)
 plt.ylabel('Estado', fontsize=14, labelpad=16)
 plt.xticks(rotation=0)
@@ -271,7 +275,7 @@ df_top_estados = sqldf(query_estados)
 cores = ['#0457ac','#308fac','#37bd79','#a7e237','#f4e604']
 plt.style.use('classic')
 plt.figure(figsize=(12,8))
-plt.bar(df_top_estados['Estado'], df_top_estados['Valor_Total'], color=cores, edgecolor='black')
+plt.bar(df_top_estados['Estado'], df_top_estados['Valor_Total'], color=cores, edgecolor='black', width=0.75)
 plt.title('Estados com maior receita em vendas', fontsize=16, pad=16)
 plt.xlabel('Estado', fontsize=14, labelpad=16)
 plt.ylabel('Receita Total (R$)', fontsize=14, labelpad=16)
@@ -312,7 +316,7 @@ df_top_cidades['Cidade_UF'] = df_top_cidades['Cidade'] + ' (' + df_top_cidades['
 cores = ['#e9724d','#d6d727','#92cad1','#79ccb3','#868686']
 plt.style.use('classic')
 plt.figure(figsize=(12,8))
-plt.bar(df_top_cidades['Cidade_UF'], df_top_cidades['Valor_Total'], color=cores, edgecolor='black')
+plt.bar(df_top_cidades['Cidade_UF'], df_top_cidades['Valor_Total'], color=cores, edgecolor='black', width=0.75)
 plt.title('Cidades com maior receita em vendas', fontsize=16, pad=16)
 plt.xlabel('Cidade (UF)', fontsize=14, labelpad=16)
 plt.ylabel('Receita Total (R$)', fontsize=14, labelpad=16)
@@ -364,6 +368,9 @@ SELECT
     JOIN 
         df_pedidos AS p
         ON p.pedido_id = i.pedido_id
+    JOIN df_clientes AS c
+         ON p.cliente_id = c.cliente_id
+    WHERE c.grupo = 'B'
     GROUP BY prod.categoria
     ORDER BY Num_Pedidos DESC
 """
@@ -373,12 +380,12 @@ SELECT
 
 # Com a consulta acima, podemos dizer a categoria do produto influencia sim no
 # status do pedido. É possível concluir isso ao perceber a diferença entre a menor
-# taxa de cancelamento (15.3), da categoria 'Brinquedos' e a maior taxa de cance-
-# lamento (17.12), da categoria 'Roupas'.
+# taxa de cancelamento (16.46), da categoria 'Brinquedos' e a maior taxa de cance-
+# lamento (17.57), da categoria 'Roupas'.
 # Esta diferença provavelmente se dá ao fato das roupas terem uma maior proba-
-# bilidade de virem com algum defeito ou insatisfação com o tamanho pedido,
-# gerando assim mais trocas e devoluções em relação aos brinquedos por exemplo,
-# que são compras mais específicas de forma geral.
+# bilidade de virem com algum defeito ou o cliente ter alguma insatisfação 
+# com o tamanho pedido, gerando assim mais trocas e devoluções em relação 
+# aos brinquedos por exemplo, que são compras mais específicas de forma geral.
 
 # Geração dos gráficos referentes a influência da categoria no status do pedido
 df_influencia_categoria = sqldf(query_influencia_categoria)
@@ -450,11 +457,15 @@ Categorias AS
             ELSE 'Grande (7-+ itens)'
         END AS Tamanho_Pedido
     FROM df_pedidos p
-    JOIN SomaItens AS s 
-        ON p.pedido_id = s.pedido_id)
+    JOIN 
+        SomaItens AS s 
+        ON p.pedido_id = s.pedido_id
+    JOIN df_clientes AS c
+    ON p.cliente_id = c.cliente_id
+    WHERE c.grupo = 'B')
 SELECT 
     Tamanho_Pedido,
-    COUNT(*) as Num_Pedidos,
+    COUNT(*) AS Num_Pedidos,
     SUM(CASE WHEN status = 'Confirmado' THEN 1 ELSE 0 END) AS Num_Confirmados,
     SUM(CASE WHEN status = 'CANCELADO'  THEN 1 ELSE 0 END) AS Num_Cancelados,
     SUM(CASE WHEN status = 'Pending'    THEN 1 ELSE 0 END) AS Num_Pendentes,
@@ -468,18 +479,34 @@ ORDER BY Tamanho_Pedido;
 # print('\n--- Comparação entre número de itens do pedido: ---')
 # print(sqldf(query_influencia_itens).to_string(index=False))
 
-# Com a consulta acima, temos que a maior taxa de cancelamento (17.92%) se trata
-# de pedidos pequenos, com 1 a 3 itens  e a menor taxa de cancelamento (16.17%)
+# Com a consulta acima, temos que a maior taxa de cancelamento (17.69%) se trata
+# de pedidos pequenos, com 1 a 3 itens e a menor taxa de cancelamento (14.81%)
 # pertence a pedidos grandes (7 itens ou mais). Portanto, essa informação
 # nos permite afirmar que, apesar da diferença ser baixa, o número de itens
-# do pedido acaba sim influenciando o status do mesmo, já que pedidos maiores
+# do pedido acaba sim influenciando o status do mesmo, já que pedidos menores
 # acabam sendo de certa forma compras mais decididas, gerando uma taxa de can-
 # celamento menor em relação a pedidos médios ou pequenos.
 
 # Geração dos gráfico referente a influência do número de itens no status do pedido
 df_influencia_itens = sqldf(query_influencia_itens)
 
-
+cores = ['#D9ED92','#52B69A',"#1A759F"]
+plt.style.use('classic')
+plt.figure(figsize=(10,8))
+patch, text, pcts = plt.pie(df_influencia_itens['Taxa_Cancelamento'], 
+        labels=None,
+        colors=cores, 
+        autopct='%1.1f%%',
+        startangle=0,
+        shadow=True,
+        textprops={'size': 'x-large'},
+        explode=(0.035, 0.015, 0.015))
+for i, patch in enumerate(patch):
+  text[i].set_color("#002f53")
+plt.setp(text, fontweight='600')
+plt.axis('equal')
+plt.tight_layout()
+plt.title('Taxa de cancelamento por tipo de pedido', fontsize=19)
 
 # Descomente a linha abaixo caso queira salvar novamente o gráfico gerado.
 # plt.savefig('graficos/questao4/influencia_itens.png')
@@ -487,8 +514,8 @@ df_influencia_itens = sqldf(query_influencia_itens)
 # 5. Outras métricas
 # ------------------
 # Para esta última etapa, decidi extrair pequenas métricas que
-# sejam mais simples de compreender e elaborar um dashboard pelo Power BI com essas informações,
-# gerando algumas visualizações e insights adicionais para finalizar o projeto.
+# sejam mais simples de compreender e elaborar um dashboard simples pelo Power BI com 
+# essas informações, gerando algumas visualizações e insights adicionais para finalizar o projeto.
 # Para isso, escolhi as seguintes métricas:
 # 1. Ticket médio;
 # 2. Total de pedidos por status;
@@ -500,9 +527,13 @@ df_influencia_itens = sqldf(query_influencia_itens)
 # 1. Ticket médio
 query_ticket_medio = """
 SELECT 
-    AVG(valor_total) as Ticket_Medio 
-FROM df_pedidos 
-WHERE status = 'Confirmado'
+    AVG(p.valor_total) AS Ticket_Medio 
+FROM df_pedidos AS p
+JOIN 
+    df_clientes AS c 
+    ON p.cliente_id = c.cliente_id
+WHERE p.status = 'Confirmado' AND
+      c.grupo = 'B'
 """
 
 df_ticket_medio = sqldf(query_ticket_medio)
@@ -511,10 +542,14 @@ df_ticket_medio.to_csv('PowerBI/data/ticket_medio.csv', index=False)
 # 2. Total de pedidos por status
 query_status_pedidos = """
 SELECT 
-    status, 
-    COUNT(*) as Total_Pedidos 
-FROM df_pedidos 
-GROUP BY status
+    p.status, 
+    COUNT(*) AS Total_Pedidos 
+FROM df_pedidos AS p
+JOIN 
+    df_clientes AS c 
+    ON p.cliente_id = c.cliente_id
+WHERE c.grupo = 'B'
+GROUP BY p.status
 ORDER BY Total_Pedidos DESC
 """
 
@@ -524,11 +559,15 @@ df_status_pedidos.to_csv('PowerBI/data/status_pedidos.csv', index=False)
 # 3. Vendas ao longo do tempo
 query_vendas_tempo = """
 SELECT 
-    strftime('%Y-%m', data_pedido) as Mes, 
-    SUM(valor_total) as Faturamento 
-FROM df_pedidos 
-WHERE status = 'Confirmado' 
-GROUP BY Mes 
+    strftime('%Y-%m', p.data_pedido) AS Mes, 
+    SUM(p.valor_total) AS Faturamento 
+FROM df_pedidos AS p
+JOIN 
+    df_clientes AS c 
+    ON p.cliente_id = c.cliente_id
+WHERE p.status = 'Confirmado' AND
+      c.grupo = 'B'
+GROUP BY Mes
 ORDER BY Mes
 """
 
@@ -539,12 +578,13 @@ df_vendas_tempo.to_csv('PowerBI/data/vendas_tempo.csv', index=False)
 query_top_estados = """
 SELECT 
     c.estado, 
-    SUM(p.valor_total) as Receita_Total 
-FROM df_pedidos p
+    SUM(p.valor_total) AS Receita_Total 
+FROM df_pedidos AS p
 JOIN 
-    df_clientes c 
+    df_clientes AS c 
     ON p.cliente_id = c.cliente_id 
-WHERE p.status = 'Confirmado' 
+WHERE p.status = 'Confirmado' AND
+      c.grupo = 'B'
 GROUP BY c.estado 
 ORDER BY Receita_Total DESC
 """
