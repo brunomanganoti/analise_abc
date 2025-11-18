@@ -1,6 +1,7 @@
 import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
 from pandasql import sqldf
-from matplotlib import pyplot as plt
 from scipy.stats import f_oneway
 
 df_clientes    = pd.read_csv('data/clientes.csv')
@@ -465,7 +466,7 @@ ORDER BY Tamanho_Pedido;
 """
 # Caso queira ver os resultados pelo terminal, descomente as linhas abaixo e rode o arquivo (py analise.py):
 # print('\n--- Comparação entre número de itens do pedido: ---')
-print(sqldf(query_influencia_itens).to_string(index=False))
+# print(sqldf(query_influencia_itens).to_string(index=False))
 
 # Com a consulta acima, temos que a maior taxa de cancelamento (17.92%) se trata
 # de pedidos pequenos, com 1 a 3 itens  e a menor taxa de cancelamento (16.17%)
@@ -478,26 +479,76 @@ print(sqldf(query_influencia_itens).to_string(index=False))
 # Geração dos gráfico referente a influência do número de itens no status do pedido
 df_influencia_itens = sqldf(query_influencia_itens)
 
-valores_externo = []
-cores_externo = []
-labels_para_legenda = []
 
-cor_conf = '#27ae60' # Verde
-cor_canc = '#c0392b' # Vermelho
-cor_pend = '#95a5a6' # Cinza
 
-plt.figure(figsize=(10, 10))
-plt.pie(valores_externo, radius=1.0, colors=cores_externo, labels=labels_para_legenda,
-        wedgeprops=dict(width=0.3, edgecolor='white'), labeldistance=None)
-plt.pie(df_influencia_itens['Num_Pedidos'], radius=0.7, labels=df_influencia_itens['Tamanho_Pedido'], 
-        labeldistance=0.6, colors=['#5dade2', '#2980b9', '#1a5276'], 
-        wedgeprops=dict(width=0.3, edgecolor='white'),
-        textprops={'color': 'white', 'weight': 'bold', 'fontsize': 11})
-plt.legend(loc='center', title="Status", frameon=False)
-plt.title('Distribuição: Tamanho vs. Status')
-plt.tight_layout()
-plt.savefig('graficos/questao5/influencia_itens.png')
+# Descomente a linha abaixo caso queira salvar novamente o gráfico gerado.
+# plt.savefig('graficos/questao4/influencia_itens.png')
 
 # 5. Outras métricas
 # ------------------
+# Para esta última etapa, decidi extrair pequenas métricas que
+# sejam mais simples de compreender e elaborar um dashboard pelo
+# Power BI com essas informações, gerando algumas visualizações 
+# e insights adicionais para finalizar o projeto.
+# Para isso, escolhi as seguintes métricas:
+# 1. Ticket médio;
+# 2. Total de pedidos por status;
+# 3. Vendas ao longo do tempo;
+# 4. Estados com maior número de vendas.
+# As consultas foram exportadas para arquivos .csv (../PowerBI/data)
+# e utilizadas para a elaboração do dashboard.
 
+# 1. Ticket médio
+query_ticket_medio = """
+SELECT 
+    AVG(valor_total) as Ticket_Medio 
+FROM df_pedidos 
+WHERE status = 'Confirmado'
+"""
+
+df_ticket_medio = sqldf(query_ticket_medio)
+df_ticket_medio.to_csv('PowerBI/data/ticket_medio.csv', index=False)
+
+# 2. Total de pedidos por status
+query_status_pedidos = """
+SELECT 
+    status, 
+    COUNT(*) as Total_Pedidos 
+FROM df_pedidos 
+GROUP BY status
+ORDER BY Total_Pedidos DESC
+"""
+
+df_status_pedidos = sqldf(query_status_pedidos)
+df_status_pedidos.to_csv('PowerBI/data/status_pedidos.csv', index=False)
+
+# 3. Vendas ao longo do tempo
+query_vendas_tempo = """
+SELECT 
+    strftime('%Y-%m', data_pedido) as Mes, 
+    SUM(valor_total) as Faturamento 
+FROM df_pedidos 
+WHERE status = 'Confirmado' 
+GROUP BY Mes 
+ORDER BY Mes
+"""
+
+df_vendas_tempo = sqldf(query_vendas_tempo)
+df_vendas_tempo.to_csv('PowerBI/data/vendas_tempo.csv', index=False)
+
+# 4. Estados com maior número de vendas
+query_top_estados = """
+SELECT 
+    c.estado, 
+    SUM(p.valor_total) as Receita_Total 
+FROM df_pedidos p
+JOIN 
+    df_clientes c 
+    ON p.cliente_id = c.cliente_id 
+WHERE p.status = 'Confirmado' 
+GROUP BY c.estado 
+ORDER BY Receita_Total DESC
+"""
+
+df_top_estados = sqldf(query_top_estados)
+df_top_estados.to_csv('PowerBI/data/top_estados.csv', index=False)
