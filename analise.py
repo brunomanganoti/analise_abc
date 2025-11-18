@@ -487,15 +487,14 @@ df_influencia_itens = sqldf(query_influencia_itens)
 # 5. Outras métricas
 # ------------------
 # Para esta última etapa, decidi extrair pequenas métricas que
-# sejam mais simples de compreender e elaborar um dashboard pelo
-# Power BI com essas informações, gerando algumas visualizações 
-# e insights adicionais para finalizar o projeto.
+# sejam mais simples de compreender e elaborar um dashboard pelo Power BI com essas informações,
+# gerando algumas visualizações e insights adicionais para finalizar o projeto.
 # Para isso, escolhi as seguintes métricas:
 # 1. Ticket médio;
 # 2. Total de pedidos por status;
 # 3. Vendas ao longo do tempo;
 # 4. Estados com maior número de vendas.
-# As consultas foram exportadas para arquivos .csv (../PowerBI/data)
+# As consultas foram exportadas para arquivos .csv ('../PowerBI/data')
 # e utilizadas para a elaboração do dashboard.
 
 # 1. Ticket médio
