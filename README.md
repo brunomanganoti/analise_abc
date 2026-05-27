@@ -13,7 +13,7 @@
 * **Validação Estatística:** Foi realizado um teste ANOVA (One-Way) para confirmar a significância dos resultados, obtendo-se um **f-stat de 29.2** e um **p-value de 2.3e-13**. Como o p-value é muito inferior a 0.05, a superioridade do Grupo B é estatisticamente relevante, assim podendo justificar sua escolha.
 
 <div>
-   <img src="graficos\questao1\percentual_total_grupo.png" alt="" width="450">
+   <img src="graficos\questao1\percentual_total_grupo.png" alt="" width="475">
    <img src="graficos\questao1\receita_total_grupo.png" alt="" width="475">
 </div>
 
@@ -25,7 +25,7 @@
 * **Ticket Médio:** Também foi notada diferença no comportamento de gasto, com a Receita Média por Pedido variando de R$ 3.020,79 (em RR) até R$ 3.856,35 (em PE).
 
 <div>
-   <img src="graficos\questao2\estados_percentual.png" alt="" width="450">
+   <img src="graficos\questao2\estados_percentual.png" alt="" width="475">
 </div>
 
 ## 3️⃣ Quais são os estados e cidades com maior valor em vendas? Liste-os em ordem decrescente.
@@ -47,9 +47,9 @@
     2.  **Quantidade de Itens:** O tamanho do pedido afeta inversamente o cancelamento. Pedidos **Pequenos (1-3 itens)** tiveram a menor taxa de cancelamento (**14.81%**), enquanto Pedidos **Grandes (7+ itens)** tiveram a maior (**17.69%**), sugerindo que compras menores tendem a ser mais decididas.
 
 <div>
-   <img src="graficos\questao4\influencia_categoria_cancelamento.png" alt="" width="485">
-   <img src="graficos\questao4\influencia_categoria_pedidos.png" alt="" width="485">
-   <img src="graficos\questao4\influencia_itens.png" alt="" width="440">
+   <img src="graficos\questao4\influencia_categoria_cancelamento.png" alt="" width="475">
+   <img src="graficos\questao4\influencia_categoria_pedidos.png" alt="" width="475">
+   <img src="graficos\questao4\influencia_itens.png" alt="" width="475">
 </div>
 
 ## 5️⃣ Outras métricas
