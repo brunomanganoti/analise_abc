@@ -64,3 +64,6 @@ Para finalizar a análise, foram extraídas métricas adicionais focadas no Grup
 *(Os dados dessas métricas foram exportados para a pasta `PowerBI/data` em formato .csv)*
 <br>
 *(O dashboard gerado pode ser encontrado em `PowerBI/dashboard_teste.pbix`)*
+
+# 6️⃣ Dashboard
+<img src="PowerBI/dashboard_preview.jpg">
