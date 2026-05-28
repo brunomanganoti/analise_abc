@@ -1,4 +1,4 @@
-<h1 align="center">Teste Técnico: Análise de Teste A/B/C</h1>
+<h1 align="center">📊 Análise e Validação Estatística de Teste A/B/C</h1>
 
 # Observações
 * Este arquivo foi utilizado para conter apenas um resumo das respostas;
